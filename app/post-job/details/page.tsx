@@ -3,7 +3,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, Calendar, Clock, Edit3, ArrowRight } from 'lucide-react';
 
-// 1. Move the form logic into its own component
+// 1. Create a separate component for the form logic
 function JobDetailsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,8 +38,8 @@ function JobDetailsForm() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
           <div className="bg-emerald-600 p-10 text-white">
-            <h1 className="text-3xl font-black italic text-left">Move Details</h1>
-            <p className="opacity-80 font-medium text-left">Step 2: Tell us where you are moving.</p>
+            <h1 className="text-3xl font-black italic">Move Details</h1>
+            <p className="opacity-80 font-medium">Step 2: Tell us where you are moving.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-10 space-y-8">
@@ -118,12 +118,12 @@ function JobDetailsForm() {
   );
 }
 
-// 2. Wrap the form in Suspense for the main export
+// 2. The main export MUST wrap the form in Suspense
 export default function JobDetails() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-black italic text-emerald-600">
-        Loading Move Details...
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="font-black italic text-emerald-600 text-xl animate-pulse">Loading Move Details...</div>
       </div>
     }>
       <JobDetailsForm />
