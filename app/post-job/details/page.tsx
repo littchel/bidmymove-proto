@@ -18,16 +18,19 @@ export default function JobDetails() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Create a mock job entry for the local storage network
     const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
     const newJob = {
       ...formData,
       id: Date.now().toString(),
-      vehicleType: 'Verified Vehicle', // Hardcoded to avoid searchParams
+      vehicleType: 'Verified Mover', // Static value to ensure stability
       status: 'pending',
       budget: 'Calculated'
     };
     
     localStorage.setItem('jobs', JSON.stringify([newJob, ...existingJobs]));
+    
+    // Push directly to the live bidding simulation
     router.push('/dashboard/live');
   };
 
@@ -37,12 +40,15 @@ export default function JobDetails() {
         <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
           <div className="bg-emerald-600 p-10 text-white">
             <h1 className="text-3xl font-black italic text-left">Move Details</h1>
-            <p className="opacity-80 font-medium text-left">Complete your request to notify nearby drivers.</p>
+            <p className="opacity-80 font-medium text-left italic">Finalize your request to notify our verified fleet.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-10 space-y-8">
+            {/* Route Information */}
             <div className="space-y-4 text-left">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Route Information</label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Route Information</label>
+              </div>
               <div className="relative">
                 <MapPin className="absolute left-4 top-4 text-emerald-500" size={20} />
                 <input 
@@ -63,9 +69,10 @@ export default function JobDetails() {
               </div>
             </div>
 
+            {/* Schedule */}
             <div className="grid grid-cols-2 gap-4 text-left">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Move Date</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Move Date</label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-4 text-emerald-500" size={18} />
                   <input 
@@ -77,7 +84,7 @@ export default function JobDetails() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Preferred Time</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Time Slot</label>
                 <div className="relative">
                   <Clock className="absolute left-4 top-4 text-emerald-500" size={18} />
                   <input 
@@ -90,14 +97,15 @@ export default function JobDetails() {
               </div>
             </div>
 
+            {/* Additional Info */}
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Special Instructions</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Special Instructions</label>
               <div className="relative">
                 <Edit3 className="absolute left-4 top-4 text-emerald-500" size={18} />
                 <textarea 
                   rows={3}
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                  placeholder="Mention fragile items or if help is needed loading."
+                  placeholder="Describe items, fragile goods, or extra help needed..."
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                 ></textarea>
               </div>
@@ -105,9 +113,9 @@ export default function JobDetails() {
 
             <button 
               type="submit"
-              className="w-full py-5 bg-[#1F2937] text-white rounded-2xl font-black text-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl"
+              className="w-full py-5 bg-[#1F2937] text-white rounded-2xl font-black text-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-emerald-100"
             >
-              Get Live Bids Now <ArrowRight size={24} />
+              Post Move & Get Bids <ArrowRight size={24} />
             </button>
           </form>
         </div>
