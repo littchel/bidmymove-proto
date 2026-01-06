@@ -5,120 +5,66 @@ import { MapPin, Calendar, Clock, Edit3, ArrowRight } from 'lucide-react';
 
 export default function JobDetails() {
   const router = useRouter();
-  
-  // We removed useSearchParams entirely to bypass the Cloudflare build error
-  const [formData, setFormData] = useState({
-    pickup: '',
-    destination: '',
-    date: '',
-    time: '',
-    notes: ''
-  });
+  const [pickup, setPickup] = useState('');
+  const [destination, setDestination] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Create a mock job entry for the local storage network
-    const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
     const newJob = {
-      ...formData,
+      pickup,
+      destination,
       id: Date.now().toString(),
-      vehicleType: 'Verified Mover', // Static value to ensure stability
-      status: 'pending',
-      budget: 'Calculated'
+      status: 'pending'
     };
-    
-    localStorage.setItem('jobs', JSON.stringify([newJob, ...existingJobs]));
-    
-    // Push directly to the live bidding simulation
+    localStorage.setItem('last_job', JSON.stringify(newJob));
     router.push('/dashboard/live');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
-          <div className="bg-emerald-600 p-10 text-white">
-            <h1 className="text-3xl font-black italic text-left">Move Details</h1>
-            <p className="opacity-80 font-medium text-left italic">Finalize your request to notify our verified fleet.</p>
+    <div className="min-h-screen bg-white py-12 px-6 text-[#1F2937]">
+      <div className="max-w-xl mx-auto bg-gray-50 p-10 rounded-[3rem] border border-gray-100 shadow-xl">
+        <h1 className="text-3xl font-black italic mb-2">Move Details</h1>
+        <p className="text-gray-400 font-bold mb-10 uppercase text-[10px] tracking-widest">Step 2: Destination & Route</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="text-left">
+            <label className="block text-xs font-black uppercase mb-2 ml-2">Pickup Location</label>
+            <input 
+              required
+              placeholder="e.g. Sandton, Johannesburg"
+              className="w-full p-5 bg-white rounded-2xl border-none shadow-inner text-lg font-medium"
+              onChange={(e) => setPickup(e.target.value)}
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="p-10 space-y-8">
-            {/* Route Information */}
-            <div className="space-y-4 text-left">
-              <div className="flex items-center gap-2 mb-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Route Information</label>
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-4 text-emerald-500" size={20} />
-                <input 
-                  required
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                  placeholder="Pickup Address (e.g. Sandton CBD)"
-                  onChange={(e) => setFormData({...formData, pickup: e.target.value})}
-                />
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-4 text-[#FBBF24]" size={20} />
-                <input 
-                  required
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                  placeholder="Drop-off Address (e.g. Pretoria CBD)"
-                  onChange={(e) => setFormData({...formData, destination: e.target.value})}
-                />
-              </div>
-            </div>
+          <div className="text-left">
+            <label className="block text-xs font-black uppercase mb-2 ml-2">Drop-off Location</label>
+            <input 
+              required
+              placeholder="e.g. Pretoria Central"
+              className="w-full p-5 bg-white rounded-2xl border-none shadow-inner text-lg font-medium"
+              onChange={(e) => setDestination(e.target.value)}
+            />
+          </div>
 
-            {/* Schedule */}
-            <div className="grid grid-cols-2 gap-4 text-left">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Move Date</label>
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-4 text-emerald-500" size={18} />
-                  <input 
-                    type="date"
-                    required
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Time Slot</label>
-                <div className="relative">
-                  <Clock className="absolute left-4 top-4 text-emerald-500" size={18} />
-                  <input 
-                    type="time"
-                    required
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                    onChange={(e) => setFormData({...formData, time: e.target.value})}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+             <div className="text-left">
+                <label className="block text-xs font-black uppercase mb-2 ml-2">Date</label>
+                <input type="date" required className="w-full p-5 bg-white rounded-2xl border-none text-sm" />
+             </div>
+             <div className="text-left">
+                <label className="block text-xs font-black uppercase mb-2 ml-2">Time</label>
+                <input type="time" required className="w-full p-5 bg-white rounded-2xl border-none text-sm" />
+             </div>
+          </div>
 
-            {/* Additional Info */}
-            <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Special Instructions</label>
-              <div className="relative">
-                <Edit3 className="absolute left-4 top-4 text-emerald-500" size={18} />
-                <textarea 
-                  rows={3}
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
-                  placeholder="Describe items, fragile goods, or extra help needed..."
-                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                ></textarea>
-              </div>
-            </div>
-
-            <button 
-              type="submit"
-              className="w-full py-5 bg-[#1F2937] text-white rounded-2xl font-black text-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-emerald-100"
-            >
-              Post Move & Get Bids <ArrowRight size={24} />
-            </button>
-          </form>
-        </div>
+          <button 
+            type="submit" 
+            className="w-full py-6 bg-emerald-600 text-white rounded-2xl font-black text-xl shadow-lg hover:bg-emerald-700 transition-all flex items-center justify-center gap-3 mt-4"
+          >
+            Get Live Bids <ArrowRight size={24} />
+          </button>
+        </form>
       </div>
     </div>
   );
