@@ -1,40 +1,57 @@
 'use client';
+import { Truck, MapPin, ArrowRight } from 'lucide-react';
 
-import dynamic from 'next/dynamic';
-
-// 1. This tells Next.js to NEVER pre-render this page on Cloudflare's build server
-const SafeForm = dynamic(() => Promise.resolve(function DetailsForm() {
+export default function PostJobDetails() {
   return (
-    <div className="min-h-screen bg-white py-12 px-6 flex items-center justify-center">
-      <div className="max-w-xl w-full bg-gray-50 p-10 rounded-[3rem] border border-gray-100 shadow-xl text-center">
-        <h1 className="text-3xl font-black italic mb-2 text-[#1F2937]">Move Details</h1>
-        <p className="text-gray-400 font-bold mb-10 uppercase text-[10px] tracking-widest">Route Information</p>
-        
-        <form className="space-y-6" onAction="/dashboard/live">
-          <input 
-            required
-            name="pickup"
-            placeholder="Pickup Location"
-            className="w-full p-5 bg-white rounded-2xl border-none shadow-sm text-lg"
-          />
-          <input 
-            required
-            name="destination"
-            placeholder="Drop-off Location"
-            className="w-full p-5 bg-white rounded-2xl border-none shadow-sm text-lg"
-          />
+    <div className="min-h-screen bg-white flex items-center justify-center p-6 text-left">
+      <div className="max-w-xl w-full bg-gray-50 rounded-[3rem] border border-gray-100 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-emerald-600 p-10 text-white">
+          <div className="flex items-center gap-3 mb-2">
+            <Truck size={24} />
+            <h1 className="text-2xl font-black italic uppercase tracking-tighter">BidMyMove</h1>
+          </div>
+          <p className="font-bold opacity-90">Step 2: Destination & Route</p>
+        </div>
+
+        {/* Static HTML Form (Bypasses all build errors) */}
+        <form action="/dashboard/live" className="p-10 space-y-8">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 ml-2 tracking-widest">Pickup Address</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-4 text-emerald-500" size={20} />
+                <input 
+                  required 
+                  name="pickup"
+                  placeholder="Street, Suburb, City" 
+                  className="w-full pl-12 pr-5 py-4 bg-white rounded-2xl border-none shadow-sm text-lg font-medium outline-none focus:ring-2 ring-emerald-500" 
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 ml-2 tracking-widest">Drop-off Address</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-4 text-[#FBBF24]" size={20} />
+                <input 
+                  required 
+                  name="destination"
+                  placeholder="Street, Suburb, City" 
+                  className="w-full pl-12 pr-5 py-4 bg-white rounded-2xl border-none shadow-sm text-lg font-medium outline-none focus:ring-2 ring-emerald-500" 
+                />
+              </div>
+            </div>
+          </div>
+
           <button 
             type="submit" 
-            className="w-full py-6 bg-emerald-600 text-white rounded-2xl font-black text-xl shadow-lg hover:bg-emerald-700 transition-all"
+            className="w-full py-6 bg-[#1F2937] text-white rounded-[2rem] font-black text-xl shadow-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-3"
           >
-            Find Drivers
+            Post Job & Get Bids <ArrowRight size={24} />
           </button>
         </form>
       </div>
     </div>
   );
-}), { ssr: false }); // THIS IS THE KEY: ssr: false bypasses the build error
-
-export default function JobDetails() {
-  return <SafeForm />;
 }
