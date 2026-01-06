@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react'; // Added Suspense
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, Calendar, Clock, Edit3, ArrowRight } from 'lucide-react';
 
-export default function JobDetails() {
+// 1. Wrap the logic in a sub-component to handle searchParams safely
+function JobDetailsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const vehicleType = searchParams.get('type') || '1-ton';
@@ -19,7 +20,6 @@ export default function JobDetails() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Save to local storage for the BidMyMove network
     const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
     const newJob = {
       ...formData,
@@ -30,8 +30,6 @@ export default function JobDetails() {
     };
     
     localStorage.setItem('jobs', JSON.stringify([newJob, ...existingJobs]));
-    
-    // SURGICAL FIX: Connecting to your Live Bidding simulation
     router.push('/dashboard/live');
   };
 
@@ -41,11 +39,10 @@ export default function JobDetails() {
         <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
           <div className="bg-emerald-600 p-10 text-white">
             <h1 className="text-3xl font-black italic">Move Details</h1>
-            <p className="opacity-80 font-medium">Step 2: Tell us where you are moving.</p>
+            <p className="opacity-80 font-medium text-left">Step 2: Tell us where you are moving.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-10 space-y-8">
-            {/* Location Group */}
             <div className="space-y-4 text-left">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Route Information</label>
               <div className="relative">
@@ -68,7 +65,6 @@ export default function JobDetails() {
               </div>
             </div>
 
-            {/* Date & Time Group */}
             <div className="grid grid-cols-2 gap-4 text-left">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Move Date</label>
@@ -96,7 +92,6 @@ export default function JobDetails() {
               </div>
             </div>
 
-            {/* Notes Section with Fragile Goods Commentary */}
             <div className="space-y-2 text-left">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Special Instructions</label>
               <div className="relative">
@@ -120,5 +115,18 @@ export default function JobDetails() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 2. Main Export with Suspense wrapper
+export default function JobDetails() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="font-black italic text-emerald-600 text-xl animate-pulse">Initializing Move Engine...</div>
+      </div>
+    }>
+      <JobDetailsContent />
+    </Suspense>
   );
 }
