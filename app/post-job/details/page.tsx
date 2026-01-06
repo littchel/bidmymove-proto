@@ -1,10 +1,10 @@
 'use client';
-import { useState, Suspense } from 'react'; // Added Suspense
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, Calendar, Clock, Edit3, ArrowRight } from 'lucide-react';
 
-// 1. Wrap the logic in a sub-component to handle searchParams safely
-function JobDetailsContent() {
+// 1. Move the form logic into its own component
+function JobDetailsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const vehicleType = searchParams.get('type') || '1-ton';
@@ -38,7 +38,7 @@ function JobDetailsContent() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
           <div className="bg-emerald-600 p-10 text-white">
-            <h1 className="text-3xl font-black italic">Move Details</h1>
+            <h1 className="text-3xl font-black italic text-left">Move Details</h1>
             <p className="opacity-80 font-medium text-left">Step 2: Tell us where you are moving.</p>
           </div>
 
@@ -118,15 +118,15 @@ function JobDetailsContent() {
   );
 }
 
-// 2. Main Export with Suspense wrapper
+// 2. Wrap the form in Suspense for the main export
 export default function JobDetails() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="font-black italic text-emerald-600 text-xl animate-pulse">Initializing Move Engine...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-black italic text-emerald-600">
+        Loading Move Details...
       </div>
     }>
-      <JobDetailsContent />
+      <JobDetailsForm />
     </Suspense>
   );
 }
