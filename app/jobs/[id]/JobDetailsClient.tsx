@@ -1,0 +1,74 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function JobDetailsClient({ id }: { id: string }) {
+  const [job, setJob] = useState<any>(null);
+  const [bidAmount, setBidAmount] = useState('');
+  const [message, setMessage] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    // Access browser-only localStorage safely inside useEffect
+    const jobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+    const found = jobs.find((j: any) => j.id === id);
+    setJob(found);
+  }, [id]);
+
+  const submitBid = () => {
+    const bids = JSON.parse(localStorage.getItem('bids') || '[]');
+    const newBid = {
+      id: Date.now().toString(),
+      jobId: id,
+      amount: bidAmount,
+      message: message,
+      providerName: "Swift Movers",
+      rating: "4.9"
+    };
+    localStorage.setItem('bids', JSON.stringify([...bids, newBid]));
+    alert("Bid Sent Successfully!");
+    router.push('/browse');
+  };
+
+  if (!job) return <div className="p-10">Loading job details...</div>;
+
+  return (
+    <div className="max-w-2xl mx-auto p-8">
+      <div className="bg-white border-2 rounded-2xl p-8 shadow-sm">
+        <h1 className="text-3xl font-bold mb-2">{job.title}</h1>
+        <p className="text-blue-600 font-bold text-xl mb-6">Customer Budget: ${job.budget}</p>
+        
+        <hr className="mb-8" />
+        
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Submit Your Bid</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-gray-500 mb-1">Your Price ($)</label>
+            <input 
+              type="number" 
+              className="w-full p-4 border-2 rounded-xl focus:border-blue-500 outline-none" 
+              placeholder="e.g. 250"
+              onChange={(e) => setBidAmount(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-500 mb-1">Message to Customer</label>
+            <textarea 
+              className="w-full p-4 border-2 rounded-xl focus:border-blue-500 outline-none" 
+              rows={4}
+              placeholder="Explain why you're the best fit..."
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+          <button 
+            onClick={submitBid}
+            className="w-full bg-green-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-green-600 transition"
+          >
+            Send Bid to Customer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
