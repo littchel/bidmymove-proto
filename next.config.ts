@@ -1,14 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // This forces Next.js to ignore errors in specific pages during build
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  // This is the big one: tell it to skip static generation for the problematic route
-  output: 'standalone', 
+  output: 'export',          // Forces Next.js to create a static 'out' folder
+  images: { unoptimized: true }, // Required for static exports
+  trailingSlash: true,       // Helps Cloudflare route to /post-job/ correctly
 };
 
 export default nextConfig;
