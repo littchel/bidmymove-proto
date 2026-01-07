@@ -1,0 +1,5 @@
+name = "bidmymove-proto"
+compatibility_date = "2026-01-07"
+
+[site]
+bucket = ".next"
