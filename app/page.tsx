@@ -70,8 +70,10 @@ export default function LandingPage() {
           <div className="relative flex justify-center lg:justify-end">
              <div className="relative w-full max-w-[500px] h-[500px]">
                 <div className="absolute inset-0 bg-emerald-100 rounded-[4rem] rotate-3 scale-95 opacity-50"></div>
+                
+                {/* UPDATED IMAGE: Representing BidMyMove Experience */}
                 <img 
-                  src="https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&q=80&w=1200" 
+                  src="https://images.unsplash.com/photo-1556740734-7f95891d15c6?auto=format&fit=crop&q=80&w=1200" 
                   alt="Happy Couple Booking Move" 
                   className="relative z-10 w-full h-full object-cover rounded-[4rem] shadow-2xl"
                 />
