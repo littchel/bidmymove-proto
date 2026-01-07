@@ -1,74 +1,127 @@
 'use client';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { MapPin, Calendar, Clock, Edit3, ArrowRight } from 'lucide-react';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function JobDetailsClient({ id }: { id: string }) {
-  const [job, setJob] = useState<any>(null);
-  const [bidAmount, setBidAmount] = useState('');
-  const [message, setMessage] = useState('');
+function DetailsForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const vehicleType = searchParams.get('type') || '1-ton';
 
-  useEffect(() => {
-    // Access browser-only localStorage safely inside useEffect
-    const jobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    const found = jobs.find((j: any) => j.id === id);
-    setJob(found);
-  }, [id]);
+  const [formData, setFormData] = useState({
+    pickup: '',
+    destination: '',
+    date: '',
+    time: '',
+    notes: ''
+  });
 
-  const submitBid = () => {
-    const bids = JSON.parse(localStorage.getItem('bids') || '[]');
-    const newBid = {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+    const newJob = {
+      ...formData,
       id: Date.now().toString(),
-      jobId: id,
-      amount: bidAmount,
-      message: message,
-      providerName: "Swift Movers",
-      rating: "4.9"
+      vehicleType,
+      status: 'pending',
+      budget: vehicleType === '1-ton' ? '450' : vehicleType === '4-ton' ? '1200' : '4500'
     };
-    localStorage.setItem('bids', JSON.stringify([...bids, newBid]));
-    alert("Bid Sent Successfully!");
-    router.push('/browse');
+    
+    localStorage.setItem('jobs', JSON.stringify([newJob, ...existingJobs]));
+    router.push('/dashboard/live');
   };
 
-  if (!job) return <div className="p-10">Loading job details...</div>;
-
   return (
-    <div className="max-w-2xl mx-auto p-8">
-      <div className="bg-white border-2 rounded-2xl p-8 shadow-sm">
-        <h1 className="text-3xl font-bold mb-2">{job.title}</h1>
-        <p className="text-blue-600 font-bold text-xl mb-6">Customer Budget: ${job.budget}</p>
-        
-        <hr className="mb-8" />
-        
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Submit Your Bid</h2>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-gray-500 mb-1">Your Price ($)</label>
-            <input 
-              type="number" 
-              className="w-full p-4 border-2 rounded-xl focus:border-blue-500 outline-none" 
-              placeholder="e.g. 250"
-              onChange={(e) => setBidAmount(e.target.value)}
-            />
+    <div className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
+          <div className="bg-emerald-600 p-10 text-white text-left">
+            <h1 className="text-3xl font-black italic">Move Details</h1>
+            <p className="opacity-80 font-medium tracking-tight">Step 2: Tell us where you are moving.</p>
           </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-500 mb-1">Message to Customer</label>
-            <textarea 
-              className="w-full p-4 border-2 rounded-xl focus:border-blue-500 outline-none" 
-              rows={4}
-              placeholder="Explain why you're the best fit..."
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-          <button 
-            onClick={submitBid}
-            className="w-full bg-green-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-green-600 transition"
-          >
-            Send Bid to Customer
-          </button>
+
+          <form onSubmit={handleSubmit} className="p-10 space-y-8">
+            <div className="space-y-4 text-left">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Route Information</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-4 text-emerald-500" size={20} />
+                <input 
+                  required
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
+                  placeholder="Pickup Address (e.g. Sandton CBD)"
+                  onChange={(e) => setFormData({...formData, pickup: e.target.value})}
+                />
+              </div>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-4 text-yellow-500" size={20} />
+                <input 
+                  required
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
+                  placeholder="Drop-off Address (e.g. Pretoria CBD)"
+                  onChange={(e) => setFormData({...formData, destination: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-left">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Move Date</label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-4 text-emerald-500" size={18} />
+                  <input 
+                    type="date"
+                    required
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
+                    onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</label>
+                <div className="relative">
+                  <Clock className="absolute left-4 top-4 text-emerald-500" size={18} />
+                  <input 
+                    type="time"
+                    required
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
+                    onChange={(e) => setFormData({...formData, time: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-left">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Special Instructions</label>
+              <div className="relative">
+                <Edit3 className="absolute left-4 top-4 text-emerald-500" size={18} />
+                <textarea 
+                  rows={3}
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 ring-emerald-500 font-medium text-[#1F2937]"
+                  placeholder="Fragile items? Extra help needed for stairs?"
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                ></textarea>
+              </div>
+            </div>
+
+            <button 
+              type="submit"
+              className="w-full py-5 bg-[#1F2937] text-white rounded-2xl font-black text-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl"
+            >
+              Publish Job & Get Bids <ArrowRight size={24} />
+            </button>
+          </form>
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapping in Suspense is required for Static Export when using useSearchParams
+export default function JobDetailsClient() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center font-bold">Loading move details...</div>}>
+      <DetailsForm />
+    </Suspense>
   );
 }
